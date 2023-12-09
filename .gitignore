@@ -1,0 +1,15 @@
+checkpoints
+experiments
+logs
+results
+source_data
+plot 
+*x0_*
+*k_*
+*s_*
+lib/__pycache__
+data_generation/__pycache__
+main_results
+data_generation/Dynamics/__pycache__
+motion
+
