@@ -9,7 +9,7 @@ import os
 import argparse
 parser = argparse.ArgumentParser('Dynamics Inference') 
 parser.add_argument('--dynamics', type=str, default='eco', help="eco, epi, gene")
-parser.add_argument('--topology', type=str, default='er', help="er, brn, sf, real")
+parser.add_argument('--topology', type=str, default='er', help="er, sf, com")
 parser.add_argument('--data', type=str, default='', help="net6, net8")
   
 # Topology related

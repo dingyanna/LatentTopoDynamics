@@ -21,25 +21,11 @@ dyn_name = {
 }
   
 def load_data(args, net, logger=None, eval_ss=True):
-    print('\n\n\nargs.n', args.n)
-    if args.topology == "er":
-        suffix = f'_k{args.k}.txt'
-    elif args.topology == "sf":
-        suffix = f'_m{args.m}.txt'
-    elif args.topology == "regular":
-        suffix = f'_k{args.k}.txt'
-    elif args.topology == "sw":
-        suffix = f'_k{args.k}.txt'
-    elif args.topology == "com":
-        suffix = f'_p{args.p_out}.txt' 
-    else:
-        suffix = f'_{args.data}.txt'
- 
+    print('\n\n\nargs.n', args.n) 
      
     A = get_A(args, source='random')
     net.setTopology(A)
-    x0 = get_x0(args, args.dynamics, net.N, source='random') 
-    #assert(args.n == net.N)
+    x0 = get_x0(args, args.dynamics, net.N, source='random')  
     print(args.seed)
     if args.seed == 1:
         net.gt = get_param(args.dynamics, net.N, net.A, args, source='random') 
@@ -60,11 +46,7 @@ def load_data(args, net, logger=None, eval_ss=True):
     if logger:
         logger.info(f"Equilibrium time {equilibrium_t}")
     else:
-        print(f"Equilibrium time {equilibrium_t}")    
-    #np.savetxt(f'./{args.data_folder}/{args.dynamics}/{dyn_name[args.dynamics]}_x0_seed{args.seed}_n{args.n}_{args.topology}' + suffix, x0) 
-    #np.savetxt(f'./{args.data_folder}/{args.dynamics}/{dyn_name[args.dynamics]}_A_seed{args.seed}_n{args.n}_{args.topology}' + suffix, net.A)
-    #np.savetxt(f'./{args.data_folder}/{args.dynamics}/{dyn_name[args.dynamics]}_ss_seed{args.seed}_n{args.n}_{args.topology}' + suffix, ss) 
-     
+        print(f"Equilibrium time {equilibrium_t}")     
     if logger:
         logger.info(f"Network size: {net.N}\nAverage Weight: {net.A.mean()}\nAverage Degree: {net.binA.sum(1).mean()}")
     else:
@@ -72,25 +54,21 @@ def load_data(args, net, logger=None, eval_ss=True):
      
     return x0, ss
 
-def create_net(args):
-    if args.topology != 'brn':
-        n = args.n
-        avg_d = args.k 
-        if args.dynamics == 'gene':
-            net = Gene(n, avg_d/(n-1), args.data, args.topology, m=args.m, seed=args.seed)
-        elif args.dynamics == "epi":
-            net = Epidemic(n, avg_d/(n-1), args.data, args.topology, m=args.m, seed=args.seed)
-        elif args.dynamics == "lv":
-            net = LV(n, avg_d/(n-1), args.data, args.topology, m=args.m, seed=args.seed) 
-        elif args.dynamics == "wc":
-            net = Neural(n, avg_d/(n-1), args.data, args.topology, m=args.m, seed=args.seed)
-        elif args.dynamics == "eco2":
-            net = Eco2(n, avg_d/(n-1), args.data, args.topology, m=args.m, seed=args.seed) 
-        else:
-            net = Popu(n, avg_d/(n-1), args.data, args.topology, m=args.m, seed=args.seed)
-        # if args.topology == 'real':
-        #     topo, A_exist = load_real_net(f'./data/{args.data}.edges.csv', args.directed)
-        #     net.setTopology(topo) 
+def create_net(args): 
+    n = args.n
+    avg_d = args.k 
+    if args.dynamics == 'gene':
+        net = Gene(n, avg_d/(n-1), args.data, args.topology, m=args.m, seed=args.seed)
+    elif args.dynamics == "epi":
+        net = Epidemic(n, avg_d/(n-1), args.data, args.topology, m=args.m, seed=args.seed)
+    elif args.dynamics == "lv":
+        net = LV(n, avg_d/(n-1), args.data, args.topology, m=args.m, seed=args.seed) 
+    elif args.dynamics == "wc":
+        net = Neural(n, avg_d/(n-1), args.data, args.topology, m=args.m, seed=args.seed)
+    elif args.dynamics == "eco2":
+        net = Eco2(n, avg_d/(n-1), args.data, args.topology, m=args.m, seed=args.seed) 
+    else:
+        net = Popu(n, avg_d/(n-1), args.data, args.topology, m=args.m, seed=args.seed) 
     return net
  
 def get_x0(args, dyn, N, source='pnas'):
@@ -98,11 +76,7 @@ def get_x0(args, dyn, N, source='pnas'):
         if args.x0_out == 1:
             return np.random.normal(6, 1, N)
         else:
-            return 2 * np.random.rand(N) 
-        # if args.seed % 2 == 0:
-        #     return 2 * np.random.rand(N)
-        # else:
-        #     return 5 * np.random.rand(N)
+            return 2 * np.random.rand(N)  
     if dyn in ["popu", "gene2"]:
         if args.x0_out == 1:
             return np.random.normal(6,1, N)
@@ -110,18 +84,12 @@ def get_x0(args, dyn, N, source='pnas'):
             if args.topology == 'er':
                 return 2 * np.random.rand(N) 
             else:
-                return 2 * np.random.rand(N) 
-        #return 2 * np.random.rand(N)
+                return 2 * np.random.rand(N)  
     if dyn in ["gene" ]:
         if args.x0_out == 1:
             return np.random.normal(6,1, N)
         else:
-            return 2 * np.random.rand(N) 
-        #return 2 * np.random.rand(N)
-        # if args.seed % 2 == 0:
-        #     return 2 * np.random.rand(N)
-        # else:
-        #     return 5 * np.random.rand(N)
+            return 2 * np.random.rand(N)  
     if dyn == "epi":
         if args.x0_out == 1:
             return np.random.normal(0.5,0.1, N)
@@ -214,49 +182,34 @@ def get_param(dyn, N, B, args, source='pnas'):
     else:
         if dyn == "eco": 
             alpha = 1 + 0.5*( 2*np.random.rand( N ) - 1 )
-            theta = 1 + 0.5*( 2*np.random.rand( N ) - 1 ) 
-            #alpha = np.random.rand( N ) * 0.01
-            #theta = np.random.rand( N ) * 0.1
-            param = np.concatenate((alpha, theta)).reshape(2,-1)
-            #param = np.ones((2,N))*0.1
+            theta = 1 + 0.5*( 2*np.random.rand( N ) - 1 )  
+            param = np.concatenate((alpha, theta)).reshape(2,-1) 
             if args.fix_dyn == 1:
-                param = param[:,0]
-            #param[0] = 0.00005
-            #param[1] = 0.00005 
+                param = param[:,0] 
         elif dyn == "gene":
-            param = np.array([1,1,2])
-            #param = np.array([.1,1,2])
+            param = np.array([1,1,2]) 
         elif dyn == "epi":
             delta_init = 1 + 0.5*( 2*np.random.rand( N ) - 1)
             R_0_init = np.max(np.abs(np.linalg.eigvals( np.diag( 1./np.sqrt( delta_init ))@B@np.diag( 1./np.sqrt( delta_init )))))
             print("R_0_init", R_0_init)
             print(np.mean(B), np.mean(delta_init))
             multiplicity_delta = R_0_init / 1.5
-            param = multiplicity_delta * delta_init
-            #param = multiplicity_delta * delta_init * 0.1 #then it holds eigs(W, 1) ==parameters.SIS.R_0_SIS, where W = diag(1./results.SIS.delta  )*results.B
-            #param = np.ones(N) * 5
+            param = multiplicity_delta * delta_init 
             if args.fix_dyn == 1:
                 param = np.ones(N) * param[0]
         elif dyn == "lv":
             alpha = 1 + 0.5*( 2*np.random.rand(N) - 1)
-            theta = 1 + 0.5*( 2*np.random.rand(N) - 1)
-            #alpha = np.random.rand( N ) * 0.1
-            #theta = np.random.rand( N ) * 0.1
+            theta = 1 + 0.5*( 2*np.random.rand(N) - 1) 
 
             param = np.concatenate((alpha, theta)).reshape(2,-1)
             if args.fix_dyn == 1:
-                param = param[:,0]
-            #param = np.ones((2,N))*0.1 
-            #param[0] = 0.00001
-            #param[1] = 0.00001
+                param = param[:,0] 
         elif dyn == "ko": 
-            param = 0.1*np.pi * np.random.randn( N )
-            #param = np.random.normal(np.pi,0.1,N)
+            param = 0.1*np.pi * np.random.randn( N ) 
             if args.fix_dyn == 1:
                 param = param[0] * np.ones(N)
         elif dyn == "wc":
-            param = np.array([1,1]) 
-            #param = np.array([2,2])
+            param = np.array([1,1])  
         elif dyn == "gene2":
             param = np.array([1,0.4,0.2])
         elif dyn == "neural":
