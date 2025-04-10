@@ -54,3 +54,10 @@ All generated time series are stored in `.npy` format and can be directly used f
 
 ```bash
 bash sample.sh
+```
+
+## Real Systems
+To train and test on the COVID-19 dataset, run
+```bash
+python3 run_models_covid.py  
+```
