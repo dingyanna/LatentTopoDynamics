@@ -84,9 +84,7 @@ else:
 	device = torch.device("cpu") 
 args.output_dim = 1 
 if args.dataset == 'social':
-    args.output_dim = 2
-elif args.dataset == 'motion':
-    args.output_dim = 6
+    args.output_dim = 2 
 #####################################################################################################
 model_config = f"encoder_{args.encoder}_dyn_{args.dynamics}_topo_{args.topology}_ode_{args.ode_type}"
 model_config = f"dim_{args.ode_dims}_cond_{args.condition_length}_ode_{args.ode_type}_seed_{args.random_seed}"
@@ -432,10 +430,7 @@ def main():
             fig.tight_layout()
             plt.savefig(f"./results/{date}/{model_config}/{args.dynamics}_extrap_train.jpg", dpi=1200, format="jpg", bbox_inches='tight')
             
-            if args.dataset == 'motion':
-                fig, axs = plt.subplots(3,4, figsize=(12,9)) 
-            else:
-                fig, axs = plt.subplots(1,4, figsize=(12,3))  
+            fig, axs = plt.subplots(1,4, figsize=(12,3))  
             for j in range(min(50,train_true_traj.shape[1])):  
                 if train_true_traj.shape[-1] == 1: 
                     axs[0].plot(train_true_traj[mlp_idx, j], color='tab:blue', linewidth=1 )
@@ -597,21 +592,7 @@ def test():
         for t in range(len(T)):
             axs[0,t].plot(test_true_traj[:,:,T[t], 0].reshape(-1), test_pred_traj[:,:,T[t], 0].reshape(-1), '.', color='tab:blue')
             axs[1,t].plot(test_true_traj[:,:,T[t], 1].reshape(-1), test_pred_traj[:,:,T[t], 1].reshape(-1), '.', color='tab:blue')
-             
-    elif args.dataset == 'motion':
-        fig, axs = plt.subplots(6,4,figsize=(8,12))
-        T = [0, 5, test_true_traj.shape[2]//2, -1 ]
-        for t in range(len(T)):
-            axs[0,t].plot(test_true_traj[:,:,T[t], 0].reshape(-1), test_pred_traj[:,:,T[t], 0].reshape(-1), '.', color='tab:blue')
-            axs[1,t].plot(test_true_traj[:,:,T[t], 1].reshape(-1), test_pred_traj[:,:,T[t], 1].reshape(-1), '.', color='tab:blue')
-            axs[2,t].plot(test_true_traj[:,:,T[t], 2].reshape(-1), test_pred_traj[:,:,T[t], 2].reshape(-1), '.', color='tab:blue')
-            axs[3,t].plot(test_true_traj[:,:,T[t], 3].reshape(-1), test_pred_traj[:,:,T[t], 3].reshape(-1), '.', color='tab:blue')
-            axs[4,t].plot(test_true_traj[:,:,T[t], 4].reshape(-1), test_pred_traj[:,:,T[t], 4].reshape(-1), '.', color='tab:blue')
-            axs[5,t].plot(test_true_traj[:,:,T[t], 5].reshape(-1), test_pred_traj[:,:,T[t], 5].reshape(-1), '.', color='tab:blue')
-
-            axs[5,t].set_xlabel('True')
-        axs[2,0].set_ylabel('Prediction')
-    
+     
     else:    
         fig, axs = plt.subplots(1,4,figsize=(12,3))
         T = [0, test_true_traj.shape[2]*2//3, test_true_traj.shape[2]//2, -1 ]
