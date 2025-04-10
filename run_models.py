@@ -82,9 +82,7 @@ if torch.cuda.is_available():
 else:
 	print("Using CPU" + "-" * 80)
 	device = torch.device("cpu") 
-args.output_dim = 1 
-if args.dataset == 'social':
-    args.output_dim = 2 
+args.output_dim = 1  
 #####################################################################################################
 model_config = f"encoder_{args.encoder}_dyn_{args.dynamics}_topo_{args.topology}_ode_{args.ode_type}"
 model_config = f"dim_{args.ode_dims}_cond_{args.condition_length}_ode_{args.ode_type}_seed_{args.random_seed}"
@@ -431,33 +429,12 @@ def main():
             plt.savefig(f"./results/{date}/{model_config}/{args.dynamics}_extrap_train.jpg", dpi=1200, format="jpg", bbox_inches='tight')
             
             fig, axs = plt.subplots(1,4, figsize=(12,3))  
-            for j in range(min(50,train_true_traj.shape[1])):  
-                if train_true_traj.shape[-1] == 1: 
-                    axs[0].plot(train_true_traj[mlp_idx, j], color='tab:blue', linewidth=1 )
-                    axs[1].plot(train_pred_traj[mlp_idx, j], color='tab:orange', linewidth=1 )
-                    axs[2].plot(train_true_traj[mlp_idx, -1-j], color='tab:blue', linewidth=1 )
-                    axs[3].plot(train_pred_traj[mlp_idx, -1-j], color='tab:orange', linewidth=1 )
-                elif args.dataset == 'social':
-                    axs[0].plot(train_true_traj[mlp_idx, j, :, 0], color='tab:blue', linewidth=1 )
-                    axs[1].plot(train_pred_traj[mlp_idx, j, :, 0], color='tab:orange', linewidth=1 )
-                    axs[2].plot(train_true_traj[mlp_idx, j, :, 1], color='tab:blue', linewidth=1 )
-                    axs[3].plot(train_pred_traj[mlp_idx, j, :, 1], color='tab:orange', linewidth=1 )
-                else: 
-                    axs[0,0].plot(train_true_traj[mlp_idx, j, :, 0], color='tab:blue', linewidth=1 )
-                    axs[0,1].plot(train_pred_traj[mlp_idx, j, :, 0], color='tab:orange', linewidth=1 )
-                    axs[0,2].plot(train_true_traj[mlp_idx, j, :, 1], color='tab:blue', linewidth=1 )
-                    axs[0,3].plot(train_pred_traj[mlp_idx, j, :, 1], color='tab:orange', linewidth=1 )
-                    
-                    axs[1,0].plot(train_true_traj[mlp_idx, j, :, 2], color='tab:blue', linewidth=1 )
-                    axs[1,1].plot(train_pred_traj[mlp_idx, j, :, 2], color='tab:orange', linewidth=1 )
-                    axs[1,2].plot(train_true_traj[mlp_idx, j, :, 3], color='tab:blue', linewidth=1 )
-                    axs[1,3].plot(train_pred_traj[mlp_idx, j, :, 3], color='tab:orange', linewidth=1 )
-                    
-                    axs[2,0].plot(train_true_traj[mlp_idx, j, :, 4], color='tab:blue', linewidth=1 )
-                    axs[2,1].plot(train_pred_traj[mlp_idx, j, :, 4], color='tab:orange', linewidth=1 )
-                    axs[2,2].plot(train_true_traj[mlp_idx, j, :, 5], color='tab:blue', linewidth=1 )
-                    axs[2,3].plot(train_pred_traj[mlp_idx, j, :, 5], color='tab:orange', linewidth=1 )
- 
+            for j in range(min(50,train_true_traj.shape[1])):   
+                axs[0].plot(train_true_traj[mlp_idx, j], color='tab:blue', linewidth=1 )
+                axs[1].plot(train_pred_traj[mlp_idx, j], color='tab:orange', linewidth=1 )
+                axs[2].plot(train_true_traj[mlp_idx, -1-j], color='tab:blue', linewidth=1 )
+                axs[3].plot(train_pred_traj[mlp_idx, -1-j], color='tab:orange', linewidth=1 )
+            
             fig.tight_layout()
             plt.savefig(f"./results/{date}/{model_config}/{args.dynamics}_traj_train_mlp{mlp_idx}.jpg", dpi=1200, format="jpg", bbox_inches='tight')
             plt.close()
@@ -585,22 +562,14 @@ def test():
     np.save(f"./results/{date}/{model_config}/{args.dynamics}_test_mape_{args.random_seed}.npy", MAPE_all)
     
     plt.clf()
- 
-    if args.dataset == 'social':
-        fig, axs = plt.subplots(2,4,figsize=(6,4))
-        T = [0, 10, test_true_traj.shape[2]//2, -1 ]
-        for t in range(len(T)):
-            axs[0,t].plot(test_true_traj[:,:,T[t], 0].reshape(-1), test_pred_traj[:,:,T[t], 0].reshape(-1), '.', color='tab:blue')
-            axs[1,t].plot(test_true_traj[:,:,T[t], 1].reshape(-1), test_pred_traj[:,:,T[t], 1].reshape(-1), '.', color='tab:blue')
-     
-    else:    
-        fig, axs = plt.subplots(1,4,figsize=(12,3))
-        T = [0, test_true_traj.shape[2]*2//3, test_true_traj.shape[2]//2, -1 ]
-        for t in range(len(T)):
-            axs[t].plot(test_true_traj[:,:,T[t], 0].reshape(-1), test_pred_traj[:,:,T[t], 0].reshape(-1), '.', color='tab:blue')
-            axs[t].set_xlabel('True')
-            axs[t].set_ylabel('Prediction')
-            axs[t].set_title(f'T = {T[t]}')
+   
+    fig, axs = plt.subplots(1,4,figsize=(12,3))
+    T = [0, test_true_traj.shape[2]*2//3, test_true_traj.shape[2]//2, -1 ]
+    for t in range(len(T)):
+        axs[t].plot(test_true_traj[:,:,T[t], 0].reshape(-1), test_pred_traj[:,:,T[t], 0].reshape(-1), '.', color='tab:blue')
+        axs[t].set_xlabel('True')
+        axs[t].set_ylabel('Prediction')
+        axs[t].set_title(f'T = {T[t]}')
     fig.tight_layout() 
     plt.savefig(f"./results/{date}/{model_config}/{args.dynamics}_test_scatter{mlp_idx}.jpg", dpi=1200, format="jpg", bbox_inches='tight')    
 main() 

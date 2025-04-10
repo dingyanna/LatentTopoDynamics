@@ -38,7 +38,7 @@ class CoupledODE(VAE_Baseline):
 		#print('\n', sol_y.shape)
 		sol_y = sol_y.permute(1,0,2) # K*N x T x D
 		#print('\n', sol_y.shape)
-		sol_y = self.decoder(sol_y) # K*N x T x 1 if social:K*N x T x 2 
+		sol_y = self.decoder(sol_y) # K*N x T x 1  
 		#print('\n', sol_y.shape)
 		sol_y = sol_y.view(K, N, T, -1)  
 		#print('\nsol_y.shape', sol_y.shape)
